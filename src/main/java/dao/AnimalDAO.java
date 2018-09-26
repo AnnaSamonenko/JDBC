@@ -1,7 +1,6 @@
 package dao;
 
 import entities.Animal;
-import helper.RandomAnimalHelper;
 import utils.DatabaseConnection;
 
 import java.sql.PreparedStatement;
@@ -48,6 +47,15 @@ public class AnimalDAO implements AutoCloseable {
             else
                 st.setInt(3, 0);
             st.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void removeAllRecords() {
+        String sql = "DELETE FROM home_animals";
+        try (Statement statement = connection.getConnection().createStatement()) {
+            statement.execute(sql);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

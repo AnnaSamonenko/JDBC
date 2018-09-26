@@ -8,6 +8,9 @@ public class RandomAnimalHelper {
 
     private static Random random = new Random();
 
+    private RandomAnimalHelper() {
+    }
+
     public static Animal createRandomAnimal() {
         Animal animal = new Animal();
         animal.setAlias(generateAlias());

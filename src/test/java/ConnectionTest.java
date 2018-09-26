@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -31,6 +32,14 @@ public class ConnectionTest {
         }
     }
 
-
-
+    @Test
+    public void testRemovingAllRecords() {
+        try (AnimalDAO animalDAO = new AnimalDAO()) {
+            animalDAO.removeAllRecords();
+            List<Animal> animals = animalDAO.getAllRecords();
+            assertEquals(animals.size(), 0);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
