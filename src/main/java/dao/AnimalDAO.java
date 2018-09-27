@@ -1,27 +1,23 @@
 package dao;
 
 import entities.Animal;
-import utils.DatabaseConnection;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnimalDAO implements AutoCloseable {
 
-    private DatabaseConnection connection;
+    private Connection connection;
 
-    public AnimalDAO() throws SQLException {
-        connection = DatabaseConnection.getInstance();
+    public AnimalDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public List<Animal> getAllRecords() {
         List<Animal> animals = new ArrayList<>();
         String sql = "SELECT * from home_animals";
-        try (Statement statement = connection.getConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 while (resultSet.next()) {
                     Animal animal = new Animal();
@@ -34,18 +30,14 @@ public class AnimalDAO implements AutoCloseable {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
         return animals;
     }
 
     public void create(Animal animal) {
-        try (PreparedStatement st = connection.getConnection().prepareStatement("INSERT INTO home_animals(animal_id, alias, has_owner) VALUES(?, ?, ?)")) {
+        try (PreparedStatement st = connection.prepareStatement("INSERT INTO home_animals(animal_id, alias, has_owner) VALUES(?, ?, ?)")) {
             st.setInt(1, animal.getId());
             st.setString(2, animal.getAlias());
-            if (animal.getHasOwner())
-                st.setInt(3, 1);
-            else
-                st.setInt(3, 0);
+            st.setBoolean(3, animal.getHasOwner());
             st.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -54,7 +46,7 @@ public class AnimalDAO implements AutoCloseable {
 
     public void removeAllRecords() {
         String sql = "DELETE FROM home_animals";
-        try (Statement statement = connection.getConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -64,7 +56,8 @@ public class AnimalDAO implements AutoCloseable {
     @Override
     public void close() {
         try {
-            connection.close();
+            if (connection != null)
+                connection.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

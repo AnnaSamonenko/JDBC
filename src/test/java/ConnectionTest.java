@@ -2,8 +2,9 @@ import dao.AnimalDAO;
 import entities.Animal;
 import helper.RandomAnimalHelper;
 import org.junit.Test;
+import utils.MySQLDatabaseConnection;
 
-import java.sql.SQLException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,31 +16,30 @@ public class ConnectionTest {
 
     @Test
     public void testInsertion() {
+        Connection connection = MySQLDatabaseConnection.getConnection("/animal_db");
+
         List<Animal> expectedAnimals = new ArrayList<>();
         for (int i = 0; i < 10; i++)
             expectedAnimals.add(RandomAnimalHelper.createRandomAnimal());
 
-        try (AnimalDAO animalDAO = new AnimalDAO()) {
+        try (AnimalDAO animalDAO = new AnimalDAO(connection)) {
             for (Animal animal : expectedAnimals)
                 animalDAO.create(animal);
 
             List<Animal> actualAnimals = animalDAO.getAllRecords();
 
             assertTrue(actualAnimals.containsAll(expectedAnimals));
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
         }
     }
 
     @Test
     public void testRemovingAllRecords() {
-        try (AnimalDAO animalDAO = new AnimalDAO()) {
+        Connection connection = MySQLDatabaseConnection.getConnection("/animal_db");
+
+        try (AnimalDAO animalDAO = new AnimalDAO(connection)) {
             animalDAO.removeAllRecords();
             List<Animal> animals = animalDAO.getAllRecords();
             assertEquals(animals.size(), 0);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
         }
     }
 }
