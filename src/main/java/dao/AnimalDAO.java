@@ -10,7 +10,7 @@ public class AnimalDAO implements AutoCloseable {
 
     private Connection connection;
     private static String sqlSelect = "SELECT * from $table_name";
-    private static String sqlInsert = "INSERT INTO $table_name(animal_id, alias, has_owner) VALUES(?, ?, ?)";
+    private static String sqlInsert = "INSERT INTO $table_name(alias, owner_id) VALUES(?, ?)";
     private static String sqlDelete = "DELETE FROM $table_name";
 
     public AnimalDAO(Connection connection) {
@@ -25,7 +25,7 @@ public class AnimalDAO implements AutoCloseable {
                     Animal animal = new Animal();
                     animal.setId(resultSet.getInt("animal_id"));
                     animal.setAlias(resultSet.getString("alias"));
-                    animal.setHasOwner(resultSet.getBoolean("has_owner"));
+                    animal.setHuman(resultSet.getInt("owner_id"));
                     animals.add(animal);
                 }
             }
@@ -37,9 +37,8 @@ public class AnimalDAO implements AutoCloseable {
 
     public void create(String tableName, Animal animal) {
         try (PreparedStatement st = connection.prepareStatement(sqlInsert.replace("$table_name", tableName))) {
-            st.setInt(1, animal.getId());
-            st.setString(2, animal.getAlias());
-            st.setBoolean(3, animal.getHasOwner());
+            st.setString(1, animal.getAlias());
+            st.setInt(2, animal.getHuman());
             st.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();

@@ -14,5 +14,4 @@ public class MySQLDatabaseConnection {
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(url + "/" + databaseName, name, password);
     }
-
 }

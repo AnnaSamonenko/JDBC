@@ -6,15 +6,15 @@ public class Animal {
 
     private int id;
     private String alias;
-    private boolean hasOwner;
+    private int human;
 
     public Animal() {
     }
 
-    public Animal(int id, String alias, boolean hasOwner) {
+    public Animal(int id, String alias, int human) {
         this.id = id;
         this.alias = alias;
-        this.hasOwner = hasOwner;
+        this.human = human;
     }
 
     public int getId() {
@@ -33,12 +33,12 @@ public class Animal {
         this.alias = alias;
     }
 
-    public boolean getHasOwner() {
-        return hasOwner;
+    public int getHuman() {
+        return human;
     }
 
-    public void setHasOwner(boolean hasOwner) {
-        this.hasOwner = hasOwner;
+    public void setHuman(int human) {
+        this.human = human;
     }
 
     @Override
@@ -47,12 +47,12 @@ public class Animal {
         if (!(o instanceof Animal)) return false;
         Animal animal = (Animal) o;
         return getId() == animal.getId() &&
-                getHasOwner() == animal.getHasOwner() &&
-                getAlias().equals(animal.getAlias());
+                Objects.equals(getAlias(), animal.getAlias()) &&
+                Objects.equals(getHuman(), animal.getHuman());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getAlias(), getHasOwner());
+        return Objects.hash(getId(), getAlias(), getHuman());
     }
 }
