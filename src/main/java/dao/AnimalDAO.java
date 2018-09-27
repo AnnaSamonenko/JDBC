@@ -14,11 +14,11 @@ public class AnimalDAO implements AutoCloseable {
         this.connection = connection;
     }
 
-    public List<Animal> getAllRecords() {
+    public List<Animal> getAllRecords(String tableName) {
         List<Animal> animals = new ArrayList<>();
-        String sql = "SELECT * from home_animals";
+        String sql = "SELECT * from $table_name";
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sql)) {
+            try (ResultSet resultSet = statement.executeQuery(sql.replace("$table_name", tableName))) {
                 while (resultSet.next()) {
                     Animal animal = new Animal();
                     animal.setId(resultSet.getInt("animal_id"));
@@ -33,8 +33,9 @@ public class AnimalDAO implements AutoCloseable {
         return animals;
     }
 
-    public void create(Animal animal) {
-        try (PreparedStatement st = connection.prepareStatement("INSERT INTO home_animals(animal_id, alias, has_owner) VALUES(?, ?, ?)")) {
+    public void create(String tableName, Animal animal) {
+        String sql = "INSERT INTO $table_name(animal_id, alias, has_owner) VALUES(?, ?, ?)";
+        try (PreparedStatement st = connection.prepareStatement(sql.replace("$table_name", tableName))) {
             st.setInt(1, animal.getId());
             st.setString(2, animal.getAlias());
             st.setBoolean(3, animal.getHasOwner());
@@ -44,10 +45,10 @@ public class AnimalDAO implements AutoCloseable {
         }
     }
 
-    public void removeAllRecords() {
-        String sql = "DELETE FROM home_animals";
+    public void removeAllRecords(String tableName) {
+        String sql = "DELETE FROM $table_name";
         try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
+            statement.execute(sql.replace("$table_name", tableName));
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

@@ -9,16 +9,10 @@ public class MySQLDatabaseConnection {
     private MySQLDatabaseConnection() {
     }
 
-    public static Connection getConnection(String url, String name, String password, String databaseName) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(url + "/" + databaseName, name, password);
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Cannot find driver: " + ex.getMessage());
-        } catch (SQLException ex) {
-            System.out.println("Incorrect value of params for getConnection() : " + ex.getMessage());
-        }
-        return null;
+    public static Connection getConnection(String url, String name, String password,
+                                           String databaseName) throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection(url + "/" + databaseName, name, password);
     }
 
 }
