@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -16,6 +17,12 @@ public class ConnectionTest {
 
     String databaseName = "animal_db";
     String url = "jdbc:mysql://localhost:3306";
+
+    @Test
+    public void testConnection() {
+        Connection connection = MySQLDatabaseConnection.getConnection(url, "root", "root", databaseName);
+        assertNotNull(connection);
+    }
 
     @Test
     public void testInsertion() {
