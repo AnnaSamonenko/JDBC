@@ -9,6 +9,9 @@ import java.util.List;
 public class AnimalDAO implements AutoCloseable {
 
     private Connection connection;
+    private static String sqlSelect = "SELECT * from $table_name";
+    private static String sqlInsert = "INSERT INTO $table_name(animal_id, alias, has_owner) VALUES(?, ?, ?)";
+    private static String sqlDelete = "DELETE FROM $table_name";
 
     public AnimalDAO(Connection connection) {
         this.connection = connection;
@@ -16,9 +19,8 @@ public class AnimalDAO implements AutoCloseable {
 
     public List<Animal> getAllRecords(String tableName) {
         List<Animal> animals = new ArrayList<>();
-        String sql = "SELECT * from $table_name";
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sql.replace("$table_name", tableName))) {
+            try (ResultSet resultSet = statement.executeQuery(sqlSelect.replace("$table_name", tableName))) {
                 while (resultSet.next()) {
                     Animal animal = new Animal();
                     animal.setId(resultSet.getInt("animal_id"));
@@ -34,8 +36,7 @@ public class AnimalDAO implements AutoCloseable {
     }
 
     public void create(String tableName, Animal animal) {
-        String sql = "INSERT INTO $table_name(animal_id, alias, has_owner) VALUES(?, ?, ?)";
-        try (PreparedStatement st = connection.prepareStatement(sql.replace("$table_name", tableName))) {
+        try (PreparedStatement st = connection.prepareStatement(sqlInsert.replace("$table_name", tableName))) {
             st.setInt(1, animal.getId());
             st.setString(2, animal.getAlias());
             st.setBoolean(3, animal.getHasOwner());
@@ -46,9 +47,8 @@ public class AnimalDAO implements AutoCloseable {
     }
 
     public void removeAllRecords(String tableName) {
-        String sql = "DELETE FROM $table_name";
         try (Statement statement = connection.createStatement()) {
-            statement.execute(sql.replace("$table_name", tableName));
+            statement.execute(sqlDelete.replace("$table_name", tableName));
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
