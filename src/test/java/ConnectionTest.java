@@ -14,9 +14,12 @@ import static org.junit.Assert.assertTrue;
 
 public class ConnectionTest {
 
+    String databaseName = "animal_db";
+    String url = "jdbc:mysql://localhost:3306";
+
     @Test
     public void testInsertion() {
-        Connection connection = MySQLDatabaseConnection.getConnection("/animal_db");
+        Connection connection = MySQLDatabaseConnection.getConnection(url, "root", "root", databaseName);
 
         List<Animal> expectedAnimals = new ArrayList<>();
         for (int i = 0; i < 10; i++)
@@ -34,7 +37,7 @@ public class ConnectionTest {
 
     @Test
     public void testRemovingAllRecords() {
-        Connection connection = MySQLDatabaseConnection.getConnection("/animal_db");
+        Connection connection = MySQLDatabaseConnection.getConnection(url, "root", "root", databaseName);
 
         try (AnimalDAO animalDAO = new AnimalDAO(connection)) {
             animalDAO.removeAllRecords();
