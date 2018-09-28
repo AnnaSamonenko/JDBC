@@ -10,8 +10,6 @@ import java.util.List;
 public class AnimalDAO implements DAO {
 
     private Connection connection;
-    private static String sqlSelect = "SELECT * from $table_name";
-    private static String sqlSelectById = "SELECT * from $table_name WHERE human_id = ?";
     private static String sqlInsert = "INSERT INTO $table_name(alias, owner_id) VALUES(?, ?)";
     private static String sqlDelete = "DELETE FROM $table_name";
     private static String sqlJoin = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
