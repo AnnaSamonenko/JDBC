@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Human {
@@ -7,6 +9,7 @@ public class Human {
     private int id;
     private String name;
     private String surname;
+    private List<Animal> animals;
 
     public Human() {
     }
@@ -15,6 +18,7 @@ public class Human {
         this.id = id;
         this.name = name;
         this.surname = surname;
+        animals = new ArrayList<>();
     }
 
     public int getId() {

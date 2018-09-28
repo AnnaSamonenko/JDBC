@@ -6,12 +6,12 @@ public class Animal {
 
     private int id;
     private String alias;
-    private int human;
+    private Human human;
 
     public Animal() {
     }
 
-    public Animal(int id, String alias, int human) {
+    public Animal(int id, String alias, Human human) {
         this.id = id;
         this.alias = alias;
         this.human = human;
@@ -33,11 +33,11 @@ public class Animal {
         this.alias = alias;
     }
 
-    public int getHuman() {
+    public Human getHuman() {
         return human;
     }
 
-    public void setHuman(int human) {
+    public void setHuman(Human human) {
         this.human = human;
     }
 

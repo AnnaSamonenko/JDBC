@@ -13,7 +13,7 @@ public class GenerateDataHelper {
     private GenerateDataHelper() {
     }
 
-    public static Animal generateAnimal(List<Integer> possibleOwner) {
+    public static Animal generateAnimal(List<Human> possibleOwner) {
         Animal animal = new Animal();
         animal.setAlias(getRandomAnimalAlias());
         animal.setId(random.nextInt(100));
