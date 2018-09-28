@@ -35,7 +35,11 @@ public class ConnectionTest {
 
     @Test
     public void test() {
+        AnimalDAO animalDAO = new AnimalDAO(connection);
+        HumanDAO humanDAO = new HumanDAO(connection);
 
+        List<Animal> animals = animalDAO.getAll(ANIMALS_TABLE_NAME, HUMAN_TABLE_NAME);
+        List<Human> humans = humanDAO.getAll(HUMAN_TABLE_NAME, ANIMALS_TABLE_NAME);
     }
 
     @After

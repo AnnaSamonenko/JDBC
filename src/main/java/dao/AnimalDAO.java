@@ -1,6 +1,7 @@
 package dao;
 
 import entities.Animal;
+import entities.Human;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,6 +14,11 @@ public class AnimalDAO implements DAO {
     private static String sqlSelectById = "SELECT * from $table_name WHERE human_id = ?";
     private static String sqlInsert = "INSERT INTO $table_name(alias, owner_id) VALUES(?, ?)";
     private static String sqlDelete = "DELETE FROM $table_name";
+    private static String sqlJoin = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
+            "INNER JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id;";
+
+    private static String sqlJoinWithWhere = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
+            "INNER JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id WHERE animal_id = ?;";
 
     public AnimalDAO(Connection connection) {
         this.connection = connection;
@@ -20,15 +26,13 @@ public class AnimalDAO implements DAO {
 
     @Override
     public Animal get(String tableNameAnimal, String tableNameHuman, int id) {
-        HumanDAO humanDAO = new HumanDAO(connection);
-
         Animal animal = new Animal();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectById.replace("$table_name", tableNameAnimal))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlJoinWithWhere.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
             preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                animal.setId(resultSet.getInt("animal_id"));
-                animal.setAlias(resultSet.getString("alias"));
-                animal.setHuman(humanDAO.get(tableNameHuman, tableNameAnimal, resultSet.getInt("owner_id")));
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                animal.setId(rs.getInt("animal_id"));
+                animal.setAlias(rs.getString("alias"));
+                animal.setHuman(new Human(rs.getInt("human_id"), rs.getString("human_name"), rs.getString("human_surname")));
             }
         } catch (SQLException ex) {
         }
@@ -36,15 +40,14 @@ public class AnimalDAO implements DAO {
     }
 
     public List<Animal> getAll(String tableNameAnimal, String tableNameHuman) {
-        HumanDAO humanDAO = new HumanDAO(connection);
         List<Animal> animals = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlSelect.replace("$table_name", tableNameAnimal))) {
-                while (resultSet.next()) {
+            try (ResultSet rs = statement.executeQuery(sqlJoin.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
+                while (rs.next()) {
                     Animal animal = new Animal();
-                    animal.setId(resultSet.getInt("animal_id"));
-                    animal.setAlias(resultSet.getString("alias"));
-                    animal.setHuman(humanDAO.get(tableNameHuman, tableNameAnimal, resultSet.getInt("owner_id")));
+                    animal.setId(rs.getInt("animal_id"));
+                    animal.setAlias(rs.getString("alias"));
+                    animal.setHuman(new Human(rs.getInt("human_id"), rs.getString("human_name"), rs.getString("human_surname")));
                     animals.add(animal);
                 }
             }
