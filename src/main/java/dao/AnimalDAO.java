@@ -13,7 +13,7 @@ public class AnimalDAO implements DAO {
     private static String sqlDelete = "DELETE FROM $table_name";
     private static String sqlJoin = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
             "INNER JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id;";
-
+    private static String sqlSelectWHERE = "SELECT * FROM $animal_table WHERE animal_id = ?";
     private static String sqlJoinWithWhere = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
             "INNER JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id WHERE animal_id = ?;";
 
@@ -24,14 +24,17 @@ public class AnimalDAO implements DAO {
     @Override
     public Animal get(String tableNameAnimal, String tableNameHuman, int id) {
         Animal animal = new Animal();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlJoinWithWhere.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
+        HumanDAO humanDAO = new HumanDAO(connection);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectWHERE.replace("$animal_table", tableNameAnimal))) {
             preparedStatement.setInt(1, id);
             try (ResultSet rs = preparedStatement.executeQuery()) {
+                rs.next();
                 animal.setId(rs.getInt("animal_id"));
                 animal.setAlias(rs.getString("alias"));
-                animal.setHuman(new Human(rs.getInt("human_id"), rs.getString("human_name"), rs.getString("human_surname")));
+                animal.setHuman(humanDAO.get(tableNameHuman, tableNameAnimal, rs.getInt("owner_id")));
             }
         } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return animal;
     }
