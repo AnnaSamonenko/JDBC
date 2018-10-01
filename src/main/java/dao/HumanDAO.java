@@ -1,10 +1,13 @@
 package dao;
 
+import entities.Animal;
 import entities.Human;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HumanDAO implements DAO {
 
@@ -13,6 +16,8 @@ public class HumanDAO implements DAO {
     private static String sqlSelectById = "SELECT * FROM table_name WHERE human_id = ?";
     private static String sqlSelect = "SELECT * FROM $table_name";
     private static String sqlDelete = "DELETE FROM $table_name";
+    private static String sqlJoin = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
+            "INNER JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id;";
 
     public HumanDAO(Connection connection) {
         this.connection = connection;
@@ -46,13 +51,24 @@ public class HumanDAO implements DAO {
 
     public List<Human> getAll(String tableNameHuman, String tableNameAnimal) {
         List<Human> humans = new ArrayList<>();
+        Map<Integer, Human> mapper = new HashMap<>();
         try (Statement st = connection.createStatement()) {
-            try (ResultSet resultSet = st.executeQuery(sqlSelect.replace("$table_name", tableNameHuman))) {
-                while (resultSet.next()) {
-                    Human human = new Human();
-                    human.setId(resultSet.getInt("human_id"));
-                    human.setName(resultSet.getString("human_name"));
-                    human.setSurname(resultSet.getString("human_surname"));
+            try (ResultSet rs = st.executeQuery(sqlJoin.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
+                while (rs.next()) {
+                    int animalId = rs.getInt("animal_id");
+                    String alias = rs.getString("alias");
+                    Animal animal = new Animal(animalId, alias);
+                    int humanId = rs.getInt("human_id");
+                    String humanName = rs.getString("human_name");
+                    String humanSurname = rs.getString("human_surname");
+
+                    Human human = mapper.get(humanId);
+                    if (human == null) {
+                        human = new Human(humanId, humanName, humanSurname);
+                        mapper.put(humanId, human);
+                    }
+                    animal.setHuman(human);
+                    human.addAnimal(animal);
                     humans.add(human);
                 }
             }

@@ -17,6 +17,11 @@ public class Animal {
         this.human = human;
     }
 
+    public Animal(int id, String alias) {
+        this.id = id;
+        this.alias = alias;
+    }
+
     public int getId() {
         return id;
     }
