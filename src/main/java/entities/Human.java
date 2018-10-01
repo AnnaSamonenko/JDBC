@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class Human {
@@ -7,6 +9,7 @@ public class Human {
     private int id;
     private String name;
     private String surname;
+    private List<Animal> animals = new LinkedList<>();
 
     public Human() {
     }
@@ -41,13 +44,27 @@ public class Human {
         this.surname = surname;
     }
 
+    public List<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void setAnimals(List<Animal> animals) {
+        this.animals = animals;
+    }
+
+    public void addAnimal(Animal animal) {
+        animals.add(animal);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Human)) return false;
         Human human = (Human) o;
-        return Objects.equals(getName(), human.getName()) &&
-                Objects.equals(getSurname(), human.getSurname());
+        return getId() == human.getId() &&
+                Objects.equals(getName(), human.getName()) &&
+                Objects.equals(getSurname(), human.getSurname()) &&
+                Objects.equals(getAnimals(), human.getAnimals());
     }
 
     @Override

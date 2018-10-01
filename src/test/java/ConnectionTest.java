@@ -29,8 +29,8 @@ public class ConnectionTest {
     @Before
     public void generateData() throws ClassNotFoundException, SQLException {
         connection = MySQLDatabaseConnection.getConnection(URL, NAME, PASSWORD, DATABASE_NAME);
-        fillHumans();
-        fillAnimals();
+        //fillHumans();
+        //fillAnimals();
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ConnectionTest {
         List<Human> humans = humanDAO.getAll(HUMAN_TABLE_NAME, ANIMALS_TABLE_NAME);
     }
 
-    @After
+    //    @After
     public void testRemovingAllRecords() throws SQLException {
 
         AnimalDAO animalDAO = new AnimalDAO(connection);
