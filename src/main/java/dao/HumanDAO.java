@@ -47,7 +47,6 @@ public class HumanDAO implements DAO {
     }
 
     public List<Human> getAll(String tableNameHuman, String tableNameAnimal) {
-        Set<Human> humans = new HashSet<>();
         Map<Integer, Human> mapper = new HashMap<>();
         try (Statement st = connection.createStatement()) {
             try (ResultSet rs = st.executeQuery(sqlJoin.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
@@ -68,13 +67,12 @@ public class HumanDAO implements DAO {
                         animal.setHuman(human);
                         human.addAnimal(animal);
                     }
-                    humans.add(human);
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return new ArrayList<>(humans);
+        return new ArrayList<>(mapper.values());
     }
 
     public void removeAll(String tableName) {
