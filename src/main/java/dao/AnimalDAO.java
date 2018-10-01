@@ -55,11 +55,11 @@ public class AnimalDAO implements DAO {
 
                     Human value = mapper.get(humanId);
                     if (value == null) {
-                        Human human = new Human(humanId, humanName, humanSurname);
-                        human.addAnimal(animal);
-                        mapper.put(humanId, human);
-                    } else value.addAnimal(animal);
-                    animal.setHuman(mapper.get(humanId));
+                        value = new Human(humanId, humanName, humanSurname);
+                        mapper.put(humanId, value);
+                    }
+                    value.addAnimal(animal);
+                    animal.setHuman(value);
                     animals.add(animal);
                 }
             }
