@@ -40,6 +40,8 @@ public class ConnectionTest {
 
         List<Animal> animals = animalDAO.getAll(ANIMALS_TABLE_NAME, HUMAN_TABLE_NAME);
         List<Human> humans = humanDAO.getAll(HUMAN_TABLE_NAME, ANIMALS_TABLE_NAME);
+
+        Human h = humanDAO.get(HUMAN_TABLE_NAME, ANIMALS_TABLE_NAME, 424);
     }
 
     //    @After

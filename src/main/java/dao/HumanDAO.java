@@ -15,6 +15,8 @@ public class HumanDAO implements DAO {
     private static String sqlDelete = "DELETE FROM $table_name";
     private static String sqlJoin = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
             "LEFT JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id;";
+    private static String sqlJoinById = "SELECT human_id, human_name, human_surname, animal_id, alias FROM $human_table " +
+            "LEFT JOIN $animal_table ON $animal_table.owner_id = $human_table.human_id WHERE human_id = ?;";
 
     public HumanDAO(Connection connection) {
         this.connection = connection;
@@ -23,12 +25,21 @@ public class HumanDAO implements DAO {
     @Override
     public Human get(String tableNameHuman, String tableNameAnimal, int id) {
         Human human = new Human();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectById.replace("$table_name", tableNameHuman))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlJoinById.replace("$human_table", tableNameHuman).replace("$animal_table", tableNameAnimal))) {
             preparedStatement.setInt(1, id);
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                human.setId(rs.getInt("human_id"));
-                human.setName(rs.getString("human_name"));
-                human.setSurname(rs.getString("human_surname"));
+                while (rs.next()) {
+                    human.setId(rs.getInt("human_id"));
+                    human.setName(rs.getString("human_name"));
+                    human.setSurname(rs.getString("human_surname"));
+                    int animalId = rs.getInt("animal_id");
+                    String alias = rs.getString("alias");
+                    if (animalId != 0) {
+                        Animal animal = new Animal(animalId, alias);
+                        animal.setHuman(human);
+                        human.addAnimal(animal);
+                    }
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
